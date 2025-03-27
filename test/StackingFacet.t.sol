@@ -143,7 +143,7 @@ contract StakingFacetTest is Test {
 
         // Add StakingFacet to Diamond with all necessary selectors
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
-        bytes4[] memory selectors = new bytes4[](12); // Increased to 12 for rewardPerToken
+        bytes4[] memory selectors = new bytes4[](13); // Increased to 13 to include duration()
         selectors[0] = stakingFacet.addSupportedToken.selector;
         selectors[1] = stakingFacet.stakeERC20.selector;
         selectors[2] = stakingFacet.stakeERC721.selector;
@@ -155,7 +155,8 @@ contract StakingFacetTest is Test {
         selectors[8] = stakingFacet.balanceOf.selector;
         selectors[9] = stakingFacet.earned.selector;
         selectors[10] = stakingFacet.initialize.selector;
-        selectors[11] = stakingFacet.rewardPerToken.selector; // Added
+        selectors[11] = stakingFacet.rewardPerToken.selector;
+        selectors[12] = stakingFacet.duration.selector; // Added to fix testRewardDurationLogic
         cut[0] = IDiamondCut.FacetCut({
             facetAddress: address(stakingFacet),
             action: IDiamondCut.FacetCutAction.Add,
@@ -300,7 +301,7 @@ contract StakingFacetTest is Test {
         
         // Now can set new duration
         StakingFacet(address(diamond)).setRewardsDuration(15 days);
-        assertEq(StakingFacet(address(diamond)).duration(), 15 days); // Use getter
+        assertEq(StakingFacet(address(diamond)).duration(), 15 days); // This now works
         vm.stopPrank();
     }
 }
